@@ -1,18 +1,17 @@
-﻿@* model for the page *@
-@model TripDetailsViewModel
-
+﻿@model TripDetailsViewModel
 @{
     ViewData["Title"] = "Add Trip";
-    // vars for default start and end dates in the form
     var defaultStartDate = DateTime.Today.ToString("yyyy-MM-dd");
     var defaultEndDate = DateTime.Today.AddDays(10).ToString("yyyy-MM-dd");
 }
 
 <form asp-action="Add" method="post">
     <div class="form-group">
-        <label asp-for="Destination"></label>
-        <input asp-for="Destination" class="form-control" />
-        <span asp-validation-for="Destination" class="text-danger"></span>
+        <label asp-for="DestinationId">Destination</label>
+        <select asp-for="DestinationId" asp-items="Model.Destinations" class="form-control">
+            <option value="">Select a destination</option>
+        </select>
+        <span asp-validation-for="DestinationId" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="StartDate"></label>
@@ -25,10 +24,19 @@
         <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Accommodation"></label>
-        <input asp-for="Accommodation" class="form-control" />
-        <span asp-validation-for="Accommodation" class="text-danger"></span>
+        <label asp-for="AccommodationId">Accommodation</label>
+        <select asp-for="AccommodationId" asp-items="Model.Accommodations" class="form-control">
+            <option value="">Select an accommodation</option>
+        </select>
+        <span asp-validation-for="AccommodationId" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Next</button>
-    <a asp-action="Cancel" class="btn btn-secondary">Cancel</a>
+    <div class="form-group">
+        <label asp-for="ActivityIds">Activities</label>
+        <select asp-for="ActivityIds" asp-items="Model.Activities" class="form-control" multiple>
+        </select>
+        <span asp-validation-for="ActivityIds" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <a asp-action="Manager" class="btn btn-info">Manage Destinations, Accommodations, and Activities</a>
 </form>

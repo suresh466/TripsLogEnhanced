@@ -1,26 +1,45 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace TripsLog.Models
 {
     public class Trip
     {
         public int Id { get; set; }
-        // following 3 fields are required
+
         [Required(ErrorMessage = "Destination is required.")]
-        public string Destination { get; set; }
-        // we have data annotions for validation here as a backup and at viewmodels primarily
+        public int DestinationId { get; set; }
+        public Destination Destination { get; set; }
+
         [Required(ErrorMessage = "Start Date is required.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
-        // DateTime type for dates
+
         [Required(ErrorMessage = "End Date is required.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "End Date")]
+        [ValidateEndDate(ErrorMessage = "End Date must be after Start Date.")]
         public DateTime EndDate { get; set; }
-        // The rest are optional fields
-        public string Accommodation { get; set; }
-        public string AccommodationPhone { get; set; }
-        public string AccommodationEmail { get; set; }
-        public string ThingToDo1 { get; set; }
-        public string ThingToDo2 { get; set; }
-        public string ThingToDo3 { get; set; }
+
+        public int? AccommodationId { get; set; }
+        public Accommodation Accommodation { get; set; }
+
+        public ICollection<TripActivity> TripActivities { get; set; }
+    }
+
+    // Custom validation attribute for End Date
+    public class ValidateEndDateAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var trip = (Trip)validationContext.ObjectInstance;
+            if (trip.EndDate <= trip.StartDate)
+            {
+                return new ValidationResult(ErrorMessage);
+            }
+            return ValidationResult.Success;
+        }
     }
 }

@@ -12,7 +12,6 @@
     </div>
 </div>
 
-@* show message if message exists in the tempdata *@
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success mt-3" role="alert">
@@ -20,58 +19,50 @@
     </div>
 }
 
-@* table for trip details *@
 <table class="table table-bordered table-striped my-5">
     <thead>
-        <tr><th>Destination</th><th>Start Date</th><th>End Date</th><th>Accommodations</th><th>Things To Do</th></tr>
+        <tr><th>Destination</th><th>Start Date</th><th>End Date</th><th>Accommodations</th><th>Things To Do</th><th>Actions</th></tr>
     </thead>
     <tbody>
         @foreach (var trip in Model)
         {
             <tr>
-                <td>@trip.Destination</td>
+                <td>@trip.Destination.Name</td>
                 <td>@trip.StartDate.ToShortDateString()</td>
                 <td>@trip.EndDate.ToShortDateString()</td>
                 <td>
-                    @* conditions to handle the cases when data is partially available or not available *@
-                    @if (!string.IsNullOrEmpty(trip.Accommodation))
+                    @if (trip.Accommodation != null)
                     {
-                        <span>@trip.Accommodation</span>
+                        <span>@trip.Accommodation.Name</span>
 
                         <br />
-                    }
-                    @if (!string.IsNullOrEmpty(trip.AccommodationPhone))
-                    {
-                        <span>@trip.AccommodationPhone</span>
-                    }
-                    @if (!string.IsNullOrEmpty(trip.AccommodationPhone) && !string.IsNullOrEmpty(trip.AccommodationEmail))
-                    {
-                        <span> | </span>
-                    }
-                    @if (!string.IsNullOrEmpty(trip.AccommodationEmail))
-                    {
-                        <span>@trip.AccommodationEmail</span>
+                        @if (!string.IsNullOrEmpty(trip.Accommodation.Phone))
+                        {
+                            <span>@trip.Accommodation.Phone</span>
+                        }
+                        @if (!string.IsNullOrEmpty(trip.Accommodation.Phone) && !string.IsNullOrEmpty(trip.Accommodation.Email))
+                        {
+                            <span> | </span>
+                        }
+                        @if (!string.IsNullOrEmpty(trip.Accommodation.Email))
+                        {
+                            <span>@trip.Accommodation.Email</span>
+                        }
                     }
                 </td>
                 <td>
-                    @if (!string.IsNullOrEmpty(trip.ThingToDo1))
+                    @foreach (var tripActivity in trip.TripActivities)
                     {
-                        <span>- @trip.ThingToDo1</span>
+                        <span>- @tripActivity.Activity.Name</span>
 
                         <br />
                     }
-                    @if (!string.IsNullOrEmpty(trip.ThingToDo2))
-                    {
-                        <span>- @trip.ThingToDo2</span>
-
-                        <br />
-                    }
-                    @if (!string.IsNullOrEmpty(trip.ThingToDo3))
-                    {
-                        <span>- @trip.ThingToDo3</span>
-
-                        <br />
-                    }
+                </td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@trip.Id" method="post"
+                          onsubmit="return confirm('Are you sure you want to delete this trip?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

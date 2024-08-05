@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TripsLog.Models;
 using TripsLog.ViewModels;
 
@@ -20,151 +18,209 @@ namespace TripsLog.Controllers
         public HomeController(ILogger<HomeController> logger, TripContext ctx)
         {
             _logger = logger;
-            // initialize the TripContext
             context = ctx;
         }
 
-        // just get all trips and pass them to the view
+        // GET: Home
         public IActionResult Index()
         {
-            var trips = context.Trips.ToList();
+            // Include related entities when fetching trips
+            var trips = context.Trips
+                .Include(t => t.Destination)
+                .Include(t => t.Accommodation)
+                .Include(t => t.TripActivities)
+                    .ThenInclude(ta => ta.Activity)
+                .ToList();
+
             return View(trips);
         }
 
+        // GET: Home/Add
         [HttpGet]
         public IActionResult Add()
         {
-            // filling the subhead with appropriate text
-            ViewData["Subhead"] = "Add Trip Destination and Dates";
-            // return the view with an empty model so the user can fill it
-            return View(new TripDetailsViewModel());
+            ViewData["Subhead"] = "Add Trip Details";
+            var viewModel = new TripDetailsViewModel
+            {
+                Destinations = new SelectList(context.Destinations, "Id", "Name"),
+                Accommodations = new SelectList(context.Accommodations, "Id", "Name"),
+                Activities = new MultiSelectList(context.Activities, "Id", "Name")
+            };
+            return View(viewModel);
         }
-        
-        // post controller for add we have to store data in TempData for now by invoking Keep() for retention
+
+        // POST: Home/Add
         [HttpPost]
         public IActionResult Add(TripDetailsViewModel model)
         {
-            if (!ModelState.IsValid) ViewData["Subhead"] = "Add Trip Destination and Dates";
-            // if input is valid put the data in tempdata
-            if (ModelState.IsValid)
-            {
-                TempData["Destination"] = model.Destination;
-                TempData["StartDate"] = model.StartDate;
-                TempData["EndDate"] = model.EndDate;
-                TempData["Accommodation"] = model.Accommodation;
-
-                //if accommodation field is SqlAlreadyFilledException then redirect to add accommodation
-                if (!string.IsNullOrEmpty(model.Accommodation))
-                {
-                    TempData.Keep("Destination");
-                    TempData.Keep("StartDate");
-                    TempData.Keep("EndDate");
-                    TempData.Keep("Accommodation");
-                    return RedirectToAction("AddAccommodation");
-                }
-                // if accomodation field not filled just take to add thingstodo
-                TempData.Keep("Destination");
-                TempData.Keep("StartDate");
-                TempData.Keep("EndDate");
-                return RedirectToAction("AddThingsToDo");
-            }
-            return View(model);
-        }
-
-        [HttpGet]
-        public IActionResult AddAccommodation()
-        {
-            ViewData["Subhead"] = $"Add Info for {TempData["Accommodation"]}";
-            // invoke keep again because we'll need them at the end to save
-            TempData.Keep("Accommodation");
-            TempData.Keep("Destination");
-            TempData.Keep("StartDate");
-            TempData.Keep("EndDate");
-            return View(new AccommodationViewModel
-            {
-                Accommodation = TempData["Accommodation"]?.ToString()
-            });
-        }
-
-        [HttpPost]
-        public IActionResult AddAccommodation(AccommodationViewModel model)
-        {
-            // if input is valid then put the data in tempdata for later
-            if (ModelState.IsValid)
-            {
-                TempData["AccommodationPhone"] = model.AccommodationPhone;
-                TempData["AccommodationEmail"] = model.AccommodationEmail;
-                TempData.Keep("Accommodation");
-                TempData.Keep("Destination");
-                TempData.Keep("StartDate");
-                TempData.Keep("EndDate");
-                // then redirect to addthingstodo view
-                return RedirectToAction("AddThingsToDo");
-            }
-            return View(model);
-        }
-
-
-        [HttpGet]
-        public IActionResult AddThingsToDo()
-        {
-            ViewData["Subhead"] = $"Add things to do in {TempData["Destination"]}";
-            // again invoke keep here to keep data across next request
-            TempData.Keep("Accommodation");
-            TempData.Keep("Destination");
-            TempData.Keep("StartDate");
-            TempData.Keep("EndDate");
-            TempData.Keep("AccommodationPhone");
-            TempData.Keep("AccommodationEmail");
-            // return empty thingstodoviewmodel so user can fill it
-            return View(new ThingsToDoViewModel());
-        }
-
-        [HttpPost]
-        public IActionResult AddThingsToDo(ThingsToDoViewModel model)
-        {
-            // if data is valid then finally create a new Trip object with the data from tempdata
             if (ModelState.IsValid)
             {
                 var trip = new Trip
                 {
-                    // these values are required so we don't do null check we handle it in the view
-                    Destination = TempData["Destination"].ToString(),
-                    StartDate = DateTime.Parse(TempData["StartDate"].ToString()),
-                    EndDate = DateTime.Parse(TempData["EndDate"].ToString()),
-                    // accommodation data can is optional so we use null-conditionals
-                    Accommodation = TempData["Accommodation"]?.ToString(),
-                    AccommodationPhone = TempData["AccommodationPhone"]?.ToString(),
-                    AccommodationEmail = TempData["AccommodationEmail"]?.ToString(),
-                    // we don't need null conditionals here because if no value then automatically null
-                    ThingToDo1 = model.ThingToDo1,
-                    ThingToDo2 = model.ThingToDo2,
-                    ThingToDo3 = model.ThingToDo3
+                    DestinationId = model.DestinationId,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    AccommodationId = model.AccommodationId
                 };
-                // add the trip to database
+
+                // Add activities to the trip
+                if (model.ActivityIds != null)
+                {
+                    trip.TripActivities = model.ActivityIds.Select(activityId => new TripActivity
+                    {
+                        ActivityId = activityId
+                    }).ToList();
+                }
+
                 context.Trips.Add(trip);
                 context.SaveChanges();
 
-                // clear out the tempdata pre-emptively 
-                TempData.Clear();
                 TempData["Message"] = "Trip added successfully!";
                 return RedirectToAction("Index");
             }
+
+            // If we got this far, something failed; redisplay form
+            model.Destinations = new SelectList(context.Destinations, "Id", "Name");
+            model.Accommodations = new SelectList(context.Accommodations, "Id", "Name");
+            model.Activities = new MultiSelectList(context.Activities, "Id", "Name");
             return View(model);
         }
 
-        // it is cancel controller in case user wants to cancel at any point
-        public IActionResult Cancel()
+        // POST: Home/Delete/5
+        [HttpPost]
+        public IActionResult Delete(int id)
         {
-            // it just clears the tempdata and starts over
-            TempData.Clear();
+            var trip = context.Trips.Find(id);
+            if (trip == null)
+            {
+                return NotFound();
+            }
+
+            context.Trips.Remove(trip);
+            context.SaveChanges();
+
+            TempData["Message"] = "Trip deleted successfully!";
             return RedirectToAction("Index");
+        }
+
+        // GET: Home/Manager
+        public IActionResult Manager()
+        {
+            var viewModel = new ManagerViewModel
+            {
+                Destinations = context.Destinations.ToList(),
+                Accommodations = context.Accommodations.ToList(),
+                Activities = context.Activities.ToList()
+            };
+            return View(viewModel);
+        }
+
+        // POST: Home/AddDestination
+        [HttpPost]
+        public IActionResult AddDestination(ManagerViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.NewDestination))
+            {
+                context.Destinations.Add(new Destination { Name = model.NewDestination });
+                context.SaveChanges();
+                TempData["Message"] = "Destination added successfully!";
+            }
+            return RedirectToAction("Manager");
+        }
+
+        // POST: Home/AddAccommodation
+        [HttpPost]
+        public IActionResult AddAccommodation(ManagerViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.NewAccommodation))
+            {
+                context.Accommodations.Add(new Accommodation
+                {
+                    Name = model.NewAccommodation,
+                    Phone = model.NewAccommodationPhone,
+                    Email = model.NewAccommodationEmail
+                });
+                context.SaveChanges();
+                TempData["Message"] = "Accommodation added successfully!";
+            }
+            return RedirectToAction("Manager");
+        }
+
+        // POST: Home/AddActivity
+        [HttpPost]
+        public IActionResult AddActivity(ManagerViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.NewActivity))
+            {
+                context.Activities.Add(new Activity { Name = model.NewActivity });
+                context.SaveChanges();
+                TempData["Message"] = "Activity added successfully!";
+            }
+            return RedirectToAction("Manager");
+        }
+
+        // POST: Home/DeleteDestination/5
+        [HttpPost]
+        public IActionResult DeleteDestination(int id)
+        {
+            var destination = context.Destinations.Find(id);
+            if (destination == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                context.Destinations.Remove(destination);
+                context.SaveChanges();
+                TempData["Message"] = "Destination deleted successfully!";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Cannot delete destination as it is associated with one or more trips.";
+            }
+
+            return RedirectToAction("Manager");
+        }
+
+        // POST: Home/DeleteAccommodation/5
+        [HttpPost]
+        public IActionResult DeleteAccommodation(int id)
+        {
+            var accommodation = context.Accommodations.Find(id);
+            if (accommodation == null)
+            {
+                return NotFound();
+            }
+
+            context.Accommodations.Remove(accommodation);
+            context.SaveChanges();
+            TempData["Message"] = "Accommodation deleted successfully!";
+
+            return RedirectToAction("Manager");
+        }
+
+        // POST: Home/DeleteActivity/5
+        [HttpPost]
+        public IActionResult DeleteActivity(int id)
+        {
+            var activity = context.Activities.Find(id);
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            context.Activities.Remove(activity);
+            context.SaveChanges();
+            TempData["Message"] = "Activity deleted successfully!";
+
+            return RedirectToAction("Manager");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
