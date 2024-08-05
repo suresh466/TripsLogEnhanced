@@ -1,0 +1,26 @@
+﻿@* the model used for the page *@
+@model AccommodationViewModel
+
+@{
+    ViewData["Title"] = "Add Accommodation";
+}
+
+@* form for adding accomodation *@
+<form asp-action="AddAccommodation" method="post">
+    <div class="form-group">
+        <label asp-for="Accommodation"></label>
+        <input asp-for="Accommodation" class="form-control" disabled />
+    </div>
+    <div class="form-group">
+        <label asp-for="AccommodationPhone"></label>
+        <input asp-for="AccommodationPhone" class="form-control" />
+        <span asp-validation-for="AccommodationPhone" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="AccommodationEmail"></label>
+        <input asp-for="AccommodationEmail" class="form-control" />
+        <span asp-validation-for="AccommodationEmail" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Next</button>
+    <a asp-action="Cancel" class="btn btn-secondary">Cancel</a>
+</form>

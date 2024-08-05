@@ -1,0 +1,79 @@
+﻿@model List<Trip>
+@{
+    ViewData["Title"] = "My Trip Log";
+}
+
+<div class="row mx-5">
+    <div class="text-center col-md-12">
+        <a class="btn btn-info btn-block p-3 text-white font-weight-bolder shadow"
+           asp-controller="Home" asp-action="Add">
+            Add Trip
+        </a>
+    </div>
+</div>
+
+@* show message if message exists in the tempdata *@
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        @TempData["Message"]
+    </div>
+}
+
+@* table for trip details *@
+<table class="table table-bordered table-striped my-5">
+    <thead>
+        <tr><th>Destination</th><th>Start Date</th><th>End Date</th><th>Accommodations</th><th>Things To Do</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var trip in Model)
+        {
+            <tr>
+                <td>@trip.Destination</td>
+                <td>@trip.StartDate.ToShortDateString()</td>
+                <td>@trip.EndDate.ToShortDateString()</td>
+                <td>
+                    @* conditions to handle the cases when data is partially available or not available *@
+                    @if (!string.IsNullOrEmpty(trip.Accommodation))
+                    {
+                        <span>@trip.Accommodation</span>
+
+                        <br />
+                    }
+                    @if (!string.IsNullOrEmpty(trip.AccommodationPhone))
+                    {
+                        <span>@trip.AccommodationPhone</span>
+                    }
+                    @if (!string.IsNullOrEmpty(trip.AccommodationPhone) && !string.IsNullOrEmpty(trip.AccommodationEmail))
+                    {
+                        <span> | </span>
+                    }
+                    @if (!string.IsNullOrEmpty(trip.AccommodationEmail))
+                    {
+                        <span>@trip.AccommodationEmail</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(trip.ThingToDo1))
+                    {
+                        <span>- @trip.ThingToDo1</span>
+
+                        <br />
+                    }
+                    @if (!string.IsNullOrEmpty(trip.ThingToDo2))
+                    {
+                        <span>- @trip.ThingToDo2</span>
+
+                        <br />
+                    }
+                    @if (!string.IsNullOrEmpty(trip.ThingToDo3))
+                    {
+                        <span>- @trip.ThingToDo3</span>
+
+                        <br />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
