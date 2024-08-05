@@ -161,9 +161,14 @@ namespace TripsLog.Controllers
         [HttpPost]
         public IActionResult AddManager(ManagerViewModel model)
         {
+            bool itemAdded = false;
+
+            // print the model values
+
             if (!string.IsNullOrEmpty(model.NewDestination))
             {
                 context.Destinations.Add(new Destination { Name = model.NewDestination });
+                itemAdded = true;
             }
             if (!string.IsNullOrEmpty(model.NewAccommodation))
             {
@@ -173,25 +178,47 @@ namespace TripsLog.Controllers
                     Phone = model.NewAccommodationPhone,
                     Email = model.NewAccommodationEmail
                 });
+                itemAdded = true;
             }
             if (!string.IsNullOrEmpty(model.NewActivity))
             {
                 context.Activities.Add(new Activity { Name = model.NewActivity });
+                itemAdded = true;
             }
-            context.SaveChanges();
-            TempData["Message"] = "Items added successfully!";
+
+            if (itemAdded)
+            {
+                context.SaveChanges();
+                TempData["Message"] = "Items added successfully!";
+            }
+            else
+            {
+                TempData["Error"] = "No items were added. Please enter at least one item.";
+            }
             return RedirectToAction("Manager");
         }
 
         [HttpPost]
         public IActionResult DeleteManager(int? DeleteDestination, int? DeleteAccommodation, int? DeleteActivity)
         {
+            bool itemDeleted = false;
+
             if (DeleteDestination.HasValue)
             {
                 var destination = context.Destinations.Find(DeleteDestination.Value);
                 if (destination != null)
                 {
-                    context.Destinations.Remove(destination);
+                    try
+                    {
+                        context.Destinations.Remove(destination);
+                        context.SaveChanges();
+                        itemDeleted = true;
+                    }
+                    catch (DbUpdateException)
+                    {
+                        TempData["Error"] = "Cannot delete destination as it is associated with one or more trips.";
+                        return RedirectToAction("Manager");
+                    }
                 }
             }
             if (DeleteAccommodation.HasValue)
@@ -200,6 +227,8 @@ namespace TripsLog.Controllers
                 if (accommodation != null)
                 {
                     context.Accommodations.Remove(accommodation);
+                    context.SaveChanges();
+                    itemDeleted = true;
                 }
             }
             if (DeleteActivity.HasValue)
@@ -208,10 +237,19 @@ namespace TripsLog.Controllers
                 if (activity != null)
                 {
                     context.Activities.Remove(activity);
+                    context.SaveChanges();
+                    itemDeleted = true;
                 }
             }
-            context.SaveChanges();
-            TempData["Message"] = "Items deleted successfully!";
+
+            if (itemDeleted)
+            {
+                TempData["Message"] = "Items deleted successfully!";
+            }
+            else
+            {
+                TempData["Error"] = "No items were deleted. Please select at least one item to delete.";
+            }
             return RedirectToAction("Manager");
         }
 

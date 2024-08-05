@@ -6,17 +6,15 @@ namespace TripsLog.ViewModels
 {
     public class ManagerViewModel
     {
-        [Required(ErrorMessage = "Destination name is required.")]
         [StringLength(100, ErrorMessage = "Destination name cannot be longer than 100 characters.")]
         [Display(Name = "New Destination")]
         public string NewDestination { get; set; }
 
-        [Required(ErrorMessage = "Accommodation name is required.")]
         [StringLength(100, ErrorMessage = "Accommodation name cannot be longer than 100 characters.")]
         [Display(Name = "New Accommodation")]
         public string NewAccommodation { get; set; }
 
-        [Phone(ErrorMessage = "Please enter a valid phone number.")]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Please enter a valid phone number like (123) 456-7890 or 123-456-7890 or 1234567890. .")]
         [Display(Name = "Accommodation Phone")]
         public string NewAccommodationPhone { get; set; }
 
@@ -24,7 +22,6 @@ namespace TripsLog.ViewModels
         [Display(Name = "Accommodation Email")]
         public string NewAccommodationEmail { get; set; }
 
-        [Required(ErrorMessage = "Activity name is required.")]
         [StringLength(100, ErrorMessage = "Activity name cannot be longer than 100 characters.")]
         [Display(Name = "New Activity")]
         public string NewActivity { get; set; }
