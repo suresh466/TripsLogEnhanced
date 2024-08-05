@@ -24,7 +24,6 @@ namespace TripsLog.Controllers
         // GET: Home
         public IActionResult Index()
         {
-            // Include related entities when fetching trips
             var trips = context.Trips
                 .Include(t => t.Destination)
                 .Include(t => t.Accommodation)
@@ -43,8 +42,7 @@ namespace TripsLog.Controllers
             var viewModel = new TripDetailsViewModel
             {
                 Destinations = new SelectList(context.Destinations, "Id", "Name"),
-                Accommodations = new SelectList(context.Accommodations, "Id", "Name"),
-                Activities = new MultiSelectList(context.Activities, "Id", "Name")
+                Accommodations = new SelectList(context.Accommodations, "Id", "Name")
             };
             return View(viewModel);
         }
@@ -63,25 +61,70 @@ namespace TripsLog.Controllers
                     AccommodationId = model.AccommodationId
                 };
 
-                // Add activities to the trip
-                if (model.ActivityIds != null)
+                context.Trips.Add(trip);
+                context.SaveChanges();
+
+                return RedirectToAction("AddActivities", new { tripId = trip.Id });
+            }
+
+            model.Destinations = new SelectList(context.Destinations, "Id", "Name");
+            model.Accommodations = new SelectList(context.Accommodations, "Id", "Name");
+            return View(model);
+        }
+
+        // GET: Home/AddActivities
+        [HttpGet]
+        public IActionResult AddActivities(int tripId)
+        {
+            var trip = context.Trips
+                .Include(t => t.Destination)
+                .FirstOrDefault(t => t.Id == tripId);
+
+            if (trip == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ActivitySelectionViewModel
+            {
+                TripId = tripId,
+                Destination = trip.Destination.Name,
+                Activities = new MultiSelectList(context.Activities, "Id", "Name")
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Home/AddActivities
+        [HttpPost]
+        public IActionResult AddActivities(ActivitySelectionViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var trip = context.Trips.Find(model.TripId);
+                if (trip == null)
                 {
-                    trip.TripActivities = model.ActivityIds.Select(activityId => new TripActivity
-                    {
-                        ActivityId = activityId
-                    }).ToList();
+                    return NotFound();
                 }
 
-                context.Trips.Add(trip);
+                if (model.ActivityIds != null)
+                {
+                    foreach (var activityId in model.ActivityIds)
+                    {
+                        context.TripActivities.Add(new TripActivity
+                        {
+                            TripId = model.TripId,
+                            ActivityId = activityId
+                        });
+                    }
+                }
+
                 context.SaveChanges();
 
                 TempData["Message"] = "Trip added successfully!";
                 return RedirectToAction("Index");
             }
 
-            // If we got this far, something failed; redisplay form
-            model.Destinations = new SelectList(context.Destinations, "Id", "Name");
-            model.Accommodations = new SelectList(context.Accommodations, "Id", "Name");
             model.Activities = new MultiSelectList(context.Activities, "Id", "Name");
             return View(model);
         }
@@ -115,23 +158,13 @@ namespace TripsLog.Controllers
             return View(viewModel);
         }
 
-        // POST: Home/AddDestination
         [HttpPost]
-        public IActionResult AddDestination(ManagerViewModel model)
+        public IActionResult AddManager(ManagerViewModel model)
         {
             if (!string.IsNullOrEmpty(model.NewDestination))
             {
                 context.Destinations.Add(new Destination { Name = model.NewDestination });
-                context.SaveChanges();
-                TempData["Message"] = "Destination added successfully!";
             }
-            return RedirectToAction("Manager");
-        }
-
-        // POST: Home/AddAccommodation
-        [HttpPost]
-        public IActionResult AddAccommodation(ManagerViewModel model)
-        {
             if (!string.IsNullOrEmpty(model.NewAccommodation))
             {
                 context.Accommodations.Add(new Accommodation
@@ -140,80 +173,45 @@ namespace TripsLog.Controllers
                     Phone = model.NewAccommodationPhone,
                     Email = model.NewAccommodationEmail
                 });
-                context.SaveChanges();
-                TempData["Message"] = "Accommodation added successfully!";
             }
-            return RedirectToAction("Manager");
-        }
-
-        // POST: Home/AddActivity
-        [HttpPost]
-        public IActionResult AddActivity(ManagerViewModel model)
-        {
             if (!string.IsNullOrEmpty(model.NewActivity))
             {
                 context.Activities.Add(new Activity { Name = model.NewActivity });
-                context.SaveChanges();
-                TempData["Message"] = "Activity added successfully!";
             }
-            return RedirectToAction("Manager");
-        }
-
-        // POST: Home/DeleteDestination/5
-        [HttpPost]
-        public IActionResult DeleteDestination(int id)
-        {
-            var destination = context.Destinations.Find(id);
-            if (destination == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                context.Destinations.Remove(destination);
-                context.SaveChanges();
-                TempData["Message"] = "Destination deleted successfully!";
-            }
-            catch (DbUpdateException)
-            {
-                TempData["Error"] = "Cannot delete destination as it is associated with one or more trips.";
-            }
-
-            return RedirectToAction("Manager");
-        }
-
-        // POST: Home/DeleteAccommodation/5
-        [HttpPost]
-        public IActionResult DeleteAccommodation(int id)
-        {
-            var accommodation = context.Accommodations.Find(id);
-            if (accommodation == null)
-            {
-                return NotFound();
-            }
-
-            context.Accommodations.Remove(accommodation);
             context.SaveChanges();
-            TempData["Message"] = "Accommodation deleted successfully!";
-
+            TempData["Message"] = "Items added successfully!";
             return RedirectToAction("Manager");
         }
 
-        // POST: Home/DeleteActivity/5
         [HttpPost]
-        public IActionResult DeleteActivity(int id)
+        public IActionResult DeleteManager(int? DeleteDestination, int? DeleteAccommodation, int? DeleteActivity)
         {
-            var activity = context.Activities.Find(id);
-            if (activity == null)
+            if (DeleteDestination.HasValue)
             {
-                return NotFound();
+                var destination = context.Destinations.Find(DeleteDestination.Value);
+                if (destination != null)
+                {
+                    context.Destinations.Remove(destination);
+                }
             }
-
-            context.Activities.Remove(activity);
+            if (DeleteAccommodation.HasValue)
+            {
+                var accommodation = context.Accommodations.Find(DeleteAccommodation.Value);
+                if (accommodation != null)
+                {
+                    context.Accommodations.Remove(accommodation);
+                }
+            }
+            if (DeleteActivity.HasValue)
+            {
+                var activity = context.Activities.Find(DeleteActivity.Value);
+                if (activity != null)
+                {
+                    context.Activities.Remove(activity);
+                }
+            }
             context.SaveChanges();
-            TempData["Message"] = "Activity deleted successfully!";
-
+            TempData["Message"] = "Items deleted successfully!";
             return RedirectToAction("Manager");
         }
 

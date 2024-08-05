@@ -3,7 +3,8 @@
     ViewData["Title"] = "Manage Destinations, Accommodations, and Activities";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>My Trip Log</h2>
+<h3>Manage Destinations, Accommodations, and Activities</h3>
 
 @if (TempData["Message"] != null)
 {
@@ -20,86 +21,67 @@
 }
 
 <div class="row">
-    <div class="col-md-4">
-        <h3>Destinations</h3>
-        <form asp-action="AddDestination" method="post">
+    <div class="col-md-6">
+        <h4>Add</h4>
+        <form asp-action="AddManager" method="post">
             <div class="form-group">
-                <label asp-for="NewDestination"></label>
+                <label asp-for="NewDestination">Destination</label>
                 <input asp-for="NewDestination" class="form-control" />
-                <span asp-validation-for="NewDestination" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Add Destination</button>
-        </form>
-        <ul class="list-group mt-3">
-            @foreach (var destination in Model.Destinations)
-            {
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @destination.Name
-                    <form asp-action="DeleteDestination" asp-route-id="@destination.Id" method="post"
-                          onsubmit="return confirm('Are you sure you want to delete this destination?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </li>
-            }
-        </ul>
-    </div>
-
-    <div class="col-md-4">
-        <h3>Accommodations</h3>
-        <form asp-action="AddAccommodation" method="post">
             <div class="form-group">
-                <label asp-for="NewAccommodation"></label>
+                <label asp-for="NewAccommodation">Accommodation Name</label>
                 <input asp-for="NewAccommodation" class="form-control" />
-                <span asp-validation-for="NewAccommodation" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NewAccommodationPhone"></label>
+                <label asp-for="NewAccommodationPhone">Accommodation Phone</label>
                 <input asp-for="NewAccommodationPhone" class="form-control" />
-                <span asp-validation-for="NewAccommodationPhone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NewAccommodationEmail"></label>
+                <label asp-for="NewAccommodationEmail">Accommodation Email</label>
                 <input asp-for="NewAccommodationEmail" class="form-control" />
-                <span asp-validation-for="NewAccommodationEmail" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Add Accommodation</button>
-        </form>
-        <ul class="list-group mt-3">
-            @foreach (var accommodation in Model.Accommodations)
-            {
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @accommodation.Name
-                    <form asp-action="DeleteAccommodation" asp-route-id="@accommodation.Id" method="post"
-                          onsubmit="return confirm('Are you sure you want to delete this accommodation?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </li>
-            }
-        </ul>
-    </div>
-
-    <div class="col-md-4">
-        <h3>Activities</h3>
-        <form asp-action="AddActivity" method="post">
             <div class="form-group">
-                <label asp-for="NewActivity"></label>
+                <label asp-for="NewActivity">Activity</label>
                 <input asp-for="NewActivity" class="form-control" />
-                <span asp-validation-for="NewActivity" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Add Activity</button>
+            <button type="submit" class="btn btn-primary">Add</button>
         </form>
-        <ul class="list-group mt-3">
-            @foreach (var activity in Model.Activities)
-            {
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @activity.Name
-                    <form asp-action="DeleteActivity" asp-route-id="@activity.Id" method="post"
-                          onsubmit="return confirm('Are you sure you want to delete this activity?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </li>
-            }
-        </ul>
+    </div>
+    <div class="col-md-6">
+        <h4>Delete</h4>
+        <form asp-action="DeleteManager" method="post">
+            <div class="form-group">
+                <label for="DeleteDestination">Destination</label>
+                <select name="DeleteDestination" class="form-control">
+                    <option value="">Select a destination</option>
+                    @foreach (var destination in Model.Destinations)
+                    {
+                        <option value="@destination.Id">@destination.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="DeleteAccommodation">Accommodation</label>
+                <select name="DeleteAccommodation" class="form-control">
+                    <option value="">Select an accommodation</option>
+                    @foreach (var accommodation in Model.Accommodations)
+                    {
+                        <option value="@accommodation.Id">@accommodation.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="DeleteActivity">Activity</label>
+                <select name="DeleteActivity" class="form-control">
+                    <option value="">Select an activity</option>
+                    @foreach (var activity in Model.Activities)
+                    {
+                        <option value="@activity.Id">@activity.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
     </div>
 </div>
 

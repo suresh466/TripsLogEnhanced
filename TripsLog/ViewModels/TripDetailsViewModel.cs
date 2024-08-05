@@ -27,12 +27,8 @@ namespace TripsLog.ViewModels
         [Display(Name = "Accommodation")]
         public int? AccommodationId { get; set; }
 
-        [Display(Name = "Activities")]
-        public List<int> ActivityIds { get; set; }
-
         public SelectList Destinations { get; set; }
         public SelectList Accommodations { get; set; }
-        public MultiSelectList Activities { get; set; }
     }
 
     // Custom validation attribute for End Date

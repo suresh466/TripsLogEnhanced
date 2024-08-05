@@ -16,8 +16,10 @@ namespace TripsLog.Models
         public DbSet<Destination> Destinations { get; set; }
         public DbSet<Accommodation> Accommodations { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<TripActivity> TripActivities { get; set; } // Add this line
 
-        // Override the OnModelCreating method to configure relationships and seed data
+        // Rest of the code remains the same...
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

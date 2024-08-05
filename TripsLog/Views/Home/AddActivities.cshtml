@@ -1,0 +1,20 @@
+﻿@model ActivitySelectionViewModel
+@{
+    ViewData["Title"] = "Add Things To Do";
+}
+
+<h2>Add Things To Do in @Model.Destination</h2>
+
+<form asp-action="AddActivities" method="post">
+    <input type="hidden" asp-for="TripId" />
+
+    <div class="form-group">
+        <label asp-for="ActivityIds">Activities</label>
+        <select asp-for="ActivityIds" asp-items="Model.Activities" class="form-control" multiple>
+        </select>
+        <span asp-validation-for="ActivityIds" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
