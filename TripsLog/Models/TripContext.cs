@@ -16,9 +16,7 @@ namespace TripsLog.Models
         public DbSet<Destination> Destinations { get; set; }
         public DbSet<Accommodation> Accommodations { get; set; }
         public DbSet<Activity> Activities { get; set; }
-        public DbSet<TripActivity> TripActivities { get; set; } // Add this line
-
-        // Rest of the code remains the same...
+        public DbSet<TripActivity> TripActivities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,8 +53,7 @@ namespace TripsLog.Models
             // Seed data for Destinations
             modelBuilder.Entity<Destination>().HasData(
                 new Destination { Id = 1, Name = "India" },
-                new Destination { Id = 2, Name = "Nepal" },
-                new Destination { Id = 3, Name = "Nepal" }
+                new Destination { Id = 2, Name = "Nepal" }
             );
 
             // Seed data for Accommodations
@@ -95,7 +92,7 @@ namespace TripsLog.Models
                 new Trip
                 {
                     Id = 3,
-                    DestinationId = 3,
+                    DestinationId = 2,
                     StartDate = new DateTime(2024, 8, 20),
                     EndDate = new DateTime(2024, 9, 20)
                 }

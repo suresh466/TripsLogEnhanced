@@ -128,11 +128,6 @@ namespace TripsLog.Migrations
                         {
                             Id = 2,
                             Name = "Nepal"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Nepal"
                         });
                 });
 
@@ -183,7 +178,7 @@ namespace TripsLog.Migrations
                         new
                         {
                             Id = 3,
-                            DestinationId = 3,
+                            DestinationId = 2,
                             EndDate = new DateTime(2024, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StartDate = new DateTime(2024, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
