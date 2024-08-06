@@ -1,10 +1,12 @@
 ﻿@model TripDetailsViewModel
+@* prefill the date fields with today's date and 10 days from today's date *@
 @{
     ViewData["Title"] = "Add Trip";
     var defaultStartDate = DateTime.Today.ToString("yyyy-MM-dd");
     var defaultEndDate = DateTime.Today.AddDays(10).ToString("yyyy-MM-dd");
 }
 
+@* form to add a new trip *@
 <form asp-action="Add" method="post">
     <div class="form-group">
         <label asp-for="DestinationId">Destination</label>

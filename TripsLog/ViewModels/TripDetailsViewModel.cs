@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TripsLog.ViewModels
 {
+    // view model for trip details
     public class TripDetailsViewModel
     {
         public int Id { get; set; }

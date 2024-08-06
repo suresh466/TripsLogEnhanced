@@ -4,6 +4,7 @@ using TripsLog.Models;
 
 namespace TripsLog.ViewModels
 {
+    // view model for manager
     public class ManagerViewModel
     {
         [StringLength(100, ErrorMessage = "Destination name cannot be longer than 100 characters.")]

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TripsLog.ViewModels
 {
+    // view model for activity selection
     public class ActivitySelectionViewModel
     {
         public int TripId { get; set; }

@@ -1,5 +1,6 @@
 ﻿namespace TripsLog.ViewModels
 {
+    // view model for things to do
     public class ThingsToDoViewModel
     {
         // all fields are optional here

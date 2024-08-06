@@ -18,10 +18,11 @@ namespace TripsLog.Controllers
         public HomeController(ILogger<HomeController> logger, TripContext ctx)
         {
             _logger = logger;
+            // initialize the context
             context = ctx;
         }
 
-        // GET: Home
+        // show the list of trips
         public IActionResult Index()
         {
             var trips = context.Trips
@@ -34,25 +35,28 @@ namespace TripsLog.Controllers
             return View(trips);
         }
 
-        // GET: Home/Add
+        // add a new trip
         [HttpGet]
         public IActionResult Add()
         {
             ViewData["Subhead"] = "Add Trip Details";
             var viewModel = new TripDetailsViewModel
             {
+                // populate the dropdown lists
                 Destinations = new SelectList(context.Destinations, "Id", "Name"),
                 Accommodations = new SelectList(context.Accommodations, "Id", "Name")
             };
             return View(viewModel);
         }
 
-        // POST: Home/Add
+        // this handles the form submission for new trip
         [HttpPost]
         public IActionResult Add(TripDetailsViewModel model)
         {
+            // check if the model is valid
             if (ModelState.IsValid)
             {
+                // create a new trip object
                 var trip = new Trip
                 {
                     DestinationId = model.DestinationId,
@@ -61,18 +65,20 @@ namespace TripsLog.Controllers
                     AccommodationId = model.AccommodationId
                 };
 
+                // save the trip to the database and redirect to the next step
                 context.Trips.Add(trip);
                 context.SaveChanges();
 
                 return RedirectToAction("AddActivities", new { tripId = trip.Id });
             }
 
+            // if the model is not valid, show the form again
             model.Destinations = new SelectList(context.Destinations, "Id", "Name");
             model.Accommodations = new SelectList(context.Accommodations, "Id", "Name");
             return View(model);
         }
 
-        // GET: Home/AddActivities
+        // this method shows the list of activities to select from
         [HttpGet]
         public IActionResult AddActivities(int tripId)
         {
@@ -85,6 +91,7 @@ namespace TripsLog.Controllers
                 return NotFound();
             }
 
+            // create a view model object
             var viewModel = new ActivitySelectionViewModel
             {
                 TripId = tripId,
@@ -95,12 +102,13 @@ namespace TripsLog.Controllers
             return View(viewModel);
         }
 
-        // POST: Home/AddActivities
+        // this method handles the form submission for adding activities
         [HttpPost]
         public IActionResult AddActivities(ActivitySelectionViewModel model)
         {
             if (ModelState.IsValid)
             {
+                // add the selected activities to the trip if valid
                 var trip = context.Trips.Find(model.TripId);
                 if (trip == null)
                 {
@@ -119,6 +127,7 @@ namespace TripsLog.Controllers
                     }
                 }
 
+                // save the changes and redirect to the list of trips
                 context.SaveChanges();
 
                 TempData["Message"] = "Trip added successfully!";
@@ -129,7 +138,7 @@ namespace TripsLog.Controllers
             return View(model);
         }
 
-        // POST: Home/Delete/5
+        // this method deletes a trip
         [HttpPost]
         public IActionResult Delete(int id)
         {
@@ -146,7 +155,7 @@ namespace TripsLog.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Home/Manager
+        // this method shows the manager page
         public IActionResult Manager()
         {
             var viewModel = new ManagerViewModel
@@ -158,6 +167,7 @@ namespace TripsLog.Controllers
             return View(viewModel);
         }
 
+        // this method adds new items to the database (ccommodation, destination, activity)
         [HttpPost]
         public IActionResult AddManager(ManagerViewModel model)
         {
@@ -198,6 +208,7 @@ namespace TripsLog.Controllers
             return RedirectToAction("Manager");
         }
 
+        // this method deletes items from the database (destination, accommodation, activity)
         [HttpPost]
         public IActionResult DeleteManager(int? DeleteDestination, int? DeleteAccommodation, int? DeleteActivity)
         {

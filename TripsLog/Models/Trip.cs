@@ -12,6 +12,7 @@ namespace TripsLog.Models
         public int DestinationId { get; set; }
         public Destination Destination { get; set; }
 
+        // date field for start and end date are required
         [Required(ErrorMessage = "Start Date is required.")]
         [DataType(DataType.Date)]
         [Display(Name = "Start Date")]
@@ -23,7 +24,9 @@ namespace TripsLog.Models
         [ValidateEndDate(ErrorMessage = "End Date must be after Start Date.")]
         public DateTime EndDate { get; set; }
 
+        // relationship with Accommodation
         public int? AccommodationId { get; set; }
+        // relationship with Accommodation
         public Accommodation Accommodation { get; set; }
 
         public ICollection<TripActivity> TripActivities { get; set; }

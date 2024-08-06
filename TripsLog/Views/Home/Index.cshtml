@@ -12,6 +12,7 @@
     </div>
 </div>
 
+@* Display a success message here if exists *@
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success mt-3" role="alert">
@@ -19,6 +20,7 @@
     </div>
 }
 
+@* Display the trips in a table *@
 <table class="table table-bordered table-striped my-5">
     <thead>
         <tr><th>Destination</th><th>Start Date</th><th>End Date</th><th>Accommodations</th><th>Things To Do</th><th>Actions</th></tr>
@@ -58,6 +60,7 @@
                         <br />
                     }
                 </td>
+                @* every trip has a delete button *@
                 <td>
                     <form asp-action="Delete" asp-route-id="@trip.Id" method="post"
                           onsubmit="return confirm('Are you sure you want to delete this trip?');">
