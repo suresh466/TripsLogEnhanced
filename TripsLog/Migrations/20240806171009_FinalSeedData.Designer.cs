@@ -10,8 +10,8 @@ using TripsLog.Models;
 namespace TripsLog.Migrations
 {
     [DbContext(typeof(TripContext))]
-    [Migration("20240805185043_seperate-add-activities")]
-    partial class seperateaddactivities
+    [Migration("20240806171009_FinalSeedData")]
+    partial class FinalSeedData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,15 +47,15 @@ namespace TripsLog.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "contact@hotelparis.com",
-                            Name = "Hotel Paris",
+                            Email = "contact@hoteltaj.com",
+                            Name = "Hotel Taj",
                             Phone = "123456789"
                         },
                         new
                         {
                             Id = 2,
-                            Email = "info@tokyoinn.com",
-                            Name = "Tokyo Inn",
+                            Email = "info@hotelopera.com",
+                            Name = "Hotel Opera",
                             Phone = "987654321"
                         });
                 });
@@ -80,27 +80,27 @@ namespace TripsLog.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Visit Eiffel Tower"
+                            Name = "Visit Taj Mahal"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Explore Louvre Museum"
+                            Name = "Go To India Gate"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "See Statue of Liberty"
+                            Name = "Visit Pokhara"
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Visit Central Park"
+                            Name = "Climb Mt Everest"
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Explore Times Square"
+                            Name = "Go Trekking"
                         });
                 });
 
@@ -124,17 +124,17 @@ namespace TripsLog.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Paris"
+                            Name = "India"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Tokyo"
+                            Name = "Nepal"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "New York"
+                            Name = "Nepal"
                         });
                 });
 
@@ -171,23 +171,23 @@ namespace TripsLog.Migrations
                             Id = 1,
                             AccommodationId = 1,
                             DestinationId = 1,
-                            EndDate = new DateTime(2024, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            EndDate = new DateTime(2024, 8, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateTime(2024, 8, 4, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             AccommodationId = 2,
                             DestinationId = 2,
-                            EndDate = new DateTime(2024, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartDate = new DateTime(2024, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            EndDate = new DateTime(2024, 8, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateTime(2024, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             DestinationId = 3,
-                            EndDate = new DateTime(2024, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartDate = new DateTime(2024, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            EndDate = new DateTime(2024, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateTime(2024, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 

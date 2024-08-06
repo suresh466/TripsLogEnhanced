@@ -54,24 +54,24 @@ namespace TripsLog.Models
 
             // Seed data for Destinations
             modelBuilder.Entity<Destination>().HasData(
-                new Destination { Id = 1, Name = "Paris" },
-                new Destination { Id = 2, Name = "Tokyo" },
-                new Destination { Id = 3, Name = "New York" }
+                new Destination { Id = 1, Name = "India" },
+                new Destination { Id = 2, Name = "Nepal" },
+                new Destination { Id = 3, Name = "Nepal" }
             );
 
             // Seed data for Accommodations
             modelBuilder.Entity<Accommodation>().HasData(
-                new Accommodation { Id = 1, Name = "Hotel Paris", Phone = "123456789", Email = "contact@hotelparis.com" },
-                new Accommodation { Id = 2, Name = "Tokyo Inn", Phone = "987654321", Email = "info@tokyoinn.com" }
+                new Accommodation { Id = 1, Name = "Hotel Taj", Phone = "123456789", Email = "contact@hoteltaj.com" },
+                new Accommodation { Id = 2, Name = "Hotel Opera", Phone = "987654321", Email = "info@hotelopera.com" }
             );
 
             // Seed data for Activities
             modelBuilder.Entity<Activity>().HasData(
-                new Activity { Id = 1, Name = "Visit Eiffel Tower" },
-                new Activity { Id = 2, Name = "Explore Louvre Museum" },
-                new Activity { Id = 3, Name = "See Statue of Liberty" },
-                new Activity { Id = 4, Name = "Visit Central Park" },
-                new Activity { Id = 5, Name = "Explore Times Square" }
+                new Activity { Id = 1, Name = "Visit Taj Mahal" },
+                new Activity { Id = 2, Name = "Go To India Gate" },
+                new Activity { Id = 3, Name = "Visit Pokhara" },
+                new Activity { Id = 4, Name = "Climb Mt Everest" },
+                new Activity { Id = 5, Name = "Go Trekking" }
             );
 
             // Seed data for Trips
@@ -80,24 +80,24 @@ namespace TripsLog.Models
                 {
                     Id = 1,
                     DestinationId = 1,
-                    StartDate = new DateTime(2024, 1, 1),
-                    EndDate = new DateTime(2024, 1, 10),
+                    StartDate = new DateTime(2024, 8, 4),
+                    EndDate = new DateTime(2024, 8, 28),
                     AccommodationId = 1
                 },
                 new Trip
                 {
                     Id = 2,
                     DestinationId = 2,
-                    StartDate = new DateTime(2024, 2, 15),
-                    EndDate = new DateTime(2024, 2, 25),
+                    StartDate = new DateTime(2024, 8, 15),
+                    EndDate = new DateTime(2024, 8, 30),
                     AccommodationId = 2
                 },
                 new Trip
                 {
                     Id = 3,
                     DestinationId = 3,
-                    StartDate = new DateTime(2024, 3, 10),
-                    EndDate = new DateTime(2024, 3, 20)
+                    StartDate = new DateTime(2024, 8, 20),
+                    EndDate = new DateTime(2024, 9, 20)
                 }
             );
 
